@@ -1,6 +1,6 @@
 Imports System.IO
 
-'List files on the RC-30
+'List files on the RC-3
 Public Class Form1
     Public folderNames(200) As String
     Dim j As Integer, k As Integer
@@ -42,6 +42,8 @@ Public Class Form1
         End If
     End Sub
 
+
+
     'file upload
     Private Sub uploadFileButton_Click(sender As Object, e As EventArgs) Handles uploadFileButton.Click
         Dim uploadFile As String
@@ -49,6 +51,20 @@ Public Class Form1
             uploadFile = OpenFileDialog1.FileName
             Me.locMemListView.Items.Add(Path.GetFileName(uploadFile))
         End If
+    End Sub
+
+
+
+    're-upload loops from RC-3
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        For Each fileName As String In fileNames
+            For Each item As ListViewItem In loopMemListView.Items
+                If item.Text = Path.GetFileName(fileName) Then
+                    loopMemListView.Items.Remove(item)
+                End If
+            Next
+            Me.loopMemListView.Items.Add(Path.GetFileName(fileName))
+        Next
     End Sub
 
 
@@ -94,7 +110,7 @@ Public Class Form1
 
 
 
-    'drop single or multiple items
+    'drop single or multiple items into LocMemListView
     Private Sub LocMemListView_DragDrop(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.DragEventArgs) Handles locMemListView.DragDrop
         Dim i As Integer = 0
@@ -105,6 +121,7 @@ Public Class Form1
         Else
             locMemListView.Items.Add(lvi)
         End If
+
     End Sub
 
 
@@ -143,7 +160,7 @@ Public Class Form1
 
 
 
-    'drop single or multiple items
+    'drop single or multiple items into Loop MemListView
     Private Sub LoopMemListView_DragDrop(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragDrop
         Dim i As Integer = 0
@@ -205,3 +222,5 @@ End Class
 'drag and drop
 '   drag without dropping to the other side on memory tab causes an error
 '   cannot drag multiple items - deletes both and only copies the first
+'play selected track
+'   if the window is xed out too quickly, an error comes up
