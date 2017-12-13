@@ -89,3 +89,34 @@ Public Class Form1
             End If
         End If
     End Sub
+    
+        'Drag and Drop from LocMem to LoopMem
+    Public lvi2 As ListViewItem
+    Private Sub LocMemListView_ItemDrag(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.ItemDragEventArgs) Handles locMemListView.ItemDrag
+        lvi2 = locMemListView.SelectedItems(0).Clone()
+        For i As Integer = 0 To locMemListView.SelectedIndices.Count - 1
+            locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
+        Next
+        ' Create a DataObject that holds the ListViewItem.
+        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi2), DragDropEffects.Copy)
+    End Sub
+
+    Private Sub LoopMemListView_DragEnter(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragEnter
+        ' Check that a ListViewItem is being passed.
+        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
+            e.Effect = DragDropEffects.Copy
+        Else
+            e.Effect = DragDropEffects.None
+        End If
+    End Sub
+
+
+
+    Private Sub LoopMemListView_DragDrop(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragDrop
+
+        loopMemListView.Items.Add(lvi2)
+    End Sub
+
