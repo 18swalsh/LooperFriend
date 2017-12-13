@@ -1,0 +1,91 @@
+Imports System.IO
+
+
+
+'List files on the RC-30
+Public Class Form1
+    Public folderNames(200) As String
+    Dim j As Integer, k As Integer
+    Public fileNames(200) As String
+    Public locFileNames(200) As String
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        j = -1
+        k = -1
+        For Each i As String In Directory.GetDirectories("D:\ROLAND\WAVE\")
+            j += 1
+            ReDim Preserve folderNames(j)
+            folderNames(j) = i
+        Next
+
+        For Each folderName As String In folderNames
+            For Each fileName As String In Directory.GetFiles(folderName)
+                k += 1
+                ReDim Preserve fileNames(k)
+                fileNames(k) = fileName
+                Me.loopMemListView.Items.Add(Path.GetFileName(fileName))
+            Next
+        Next
+
+    End Sub
+    
+    
+    
+        'folder upload
+    Private Sub uploadButton_Click(sender As Object, e As EventArgs) Handles uploadButton.Click
+        k = -1
+        Dim uploadFolder As String
+        If (FolderBrowserDialog1.ShowDialog() = DialogResult.OK) Then
+            uploadFolder = FolderBrowserDialog1.SelectedPath
+            For Each fileName As String In Directory.GetFiles(uploadFolder)
+                k += 1
+                ReDim Preserve locFileNames(k)
+                locFileNames(k) = fileName
+                Me.locMemListView.Items.Add(Path.GetFileName(fileName))
+            Next
+        End If
+    End Sub
+
+
+
+    'file upload
+    Private Sub uploadFileButton_Click(sender As Object, e As EventArgs) Handles uploadFileButton.Click
+        Dim uploadFile As String
+        If OpenFileDialog1.ShowDialog() = DialogResult.OK Then
+            uploadFile = OpenFileDialog1.FileName
+            Me.locMemListView.Items.Add(Path.GetFileName(uploadFile))
+        End If
+    End Sub
+    
+    
+    
+     'Play selected track
+    Private Sub LoopMemListView_ItemActivate(sender As Object, e As EventArgs) _
+     Handles loopMemListView.ItemActivate
+        System.Diagnostics.Process.Start(fileNames(loopMemListView.SelectedItems(0).Index))
+    End Sub
+    
+    
+        'delete single file from locMemListView
+    Private Sub LocMemListView_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles locMemListView.KeyUp
+        If e.KeyCode = Keys.Delete Then
+            If locMemListView.SelectedItems.Count > 0 Then
+                locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
+            End If
+        End If
+    End Sub
+    
+    
+    'delete multiple files from loopMemListView
+    Private Sub LoopMemListView_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles loopMemListView.KeyUp
+        If e.KeyCode = Keys.Delete Then
+            If loopMemListView.SelectedItems.Count > 0 Then
+                If loopMemListView.SelectedItems.Count < 2 Then
+                    loopMemListView.Items.RemoveAt(loopMemListView.SelectedIndices(0))
+                Else
+                    For i = loopMemListView.SelectedItems.Count - 1 To 0 Step -1
+                        loopMemListView.SelectedItems(i).Remove()
+                    Next
+                End If
+            End If
+        End If
+    End Sub
