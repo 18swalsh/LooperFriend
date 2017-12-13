@@ -120,3 +120,109 @@ Public Class Form1
         loopMemListView.Items.Add(lvi2)
     End Sub
 
+
+'Drag and Drop from LoopMem to LocMem
+    Public lvi As ListViewItem
+    Public lvis() As ListViewItem
+
+
+    Private Sub LoopMemListView_ItemDrag(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.ItemDragEventArgs) Handles loopMemListView.ItemDrag
+        lvi = loopMemListView.SelectedItems(0).Clone()
+        For i As Integer = 0 To loopMemListView.SelectedIndices.Count - 1
+            loopMemListView.Items.RemoveAt(loopMemListView.SelectedIndices(0))
+        Next
+        ' Create a DataObject that holds the ListViewItem.
+        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi), DragDropEffects.Copy)
+    End Sub
+
+
+
+    Private Sub LocMemListView_DragEnter(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.DragEventArgs) Handles locMemListView.DragEnter
+        ' Check that a ListViewItem is being passed.
+        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
+            e.Effect = DragDropEffects.Copy
+        Else
+            e.Effect = DragDropEffects.None
+        End If
+    End Sub
+
+
+
+    Private Sub LocMemListView_DragDrop(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.DragEventArgs) Handles locMemListView.DragDrop
+        locMemListView.Items.Add(lvi)
+    End Sub
+
+
+
+
+    'Drag and Drop from LocMem to LoopMem
+    Public lvi2 As ListViewItem
+
+
+
+    Private Sub LocMemListView_ItemDrag(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.ItemDragEventArgs) Handles locMemListView.ItemDrag
+        lvi2 = locMemListView.SelectedItems(0).Clone()
+        For i As Integer = 0 To locMemListView.SelectedIndices.Count - 1
+            locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
+        Next
+        ' Create a DataObject that holds the ListViewItem.
+        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi2), DragDropEffects.Copy)
+    End Sub
+
+
+
+    Private Sub LoopMemListView_DragEnter(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragEnter
+        ' Check that a ListViewItem is being passed.
+        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
+            e.Effect = DragDropEffects.Copy
+        Else
+            e.Effect = DragDropEffects.None
+        End If
+    End Sub
+
+
+
+    Private Sub LoopMemListView_DragDrop(ByVal sender As Object, ByVal e As _
+    System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragDrop
+        loopMemListView.Items.Add(lvi2)
+    End Sub
+
+
+
+    'delete multiple files from loopMemListView
+    Private Sub LoopMemListView_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles loopMemListView.KeyUp
+        If e.KeyCode = Keys.Delete Then
+            If loopMemListView.SelectedItems.Count > 0 Then
+                If loopMemListView.SelectedItems.Count < 2 Then
+                    loopMemListView.Items.RemoveAt(loopMemListView.SelectedIndices(0))
+                Else
+                    For i = loopMemListView.SelectedItems.Count - 1 To 0 Step -1
+                        loopMemListView.SelectedItems(i).Remove()
+                    Next
+                End If
+            End If
+        End If
+    End Sub
+
+
+
+    'delete multiple files from loopMemListView
+    Private Sub LocMemListView_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles locMemListView.KeyUp
+        If e.KeyCode = Keys.Delete Then
+            If locMemListView.SelectedItems.Count > 0 Then
+                If locMemListView.SelectedItems.Count < 2 Then
+                    locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
+                Else
+                    For i = locMemListView.SelectedItems.Count - 1 To 0 Step -1
+                        locMemListView.SelectedItems(i).Remove()
+                    Next
+                End If
+            End If
+        End If
+    End Sub
+End Class
