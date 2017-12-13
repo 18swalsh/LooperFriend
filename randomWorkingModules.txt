@@ -1,7 +1,5 @@
 Imports System.IO
 
-
-
 'List files on the RC-30
 Public Class Form1
     Public folderNames(200) As String
@@ -27,10 +25,9 @@ Public Class Form1
         Next
 
     End Sub
-    
-    
-    
-        'folder upload
+
+
+    'folder upload
     Private Sub uploadButton_Click(sender As Object, e As EventArgs) Handles uploadButton.Click
         k = -1
         Dim uploadFolder As String
@@ -45,8 +42,6 @@ Public Class Form1
         End If
     End Sub
 
-
-
     'file upload
     Private Sub uploadFileButton_Click(sender As Object, e As EventArgs) Handles uploadFileButton.Click
         Dim uploadFile As String
@@ -55,93 +50,42 @@ Public Class Form1
             Me.locMemListView.Items.Add(Path.GetFileName(uploadFile))
         End If
     End Sub
-    
-    
-    
-     'Play selected track
+
+
+    'Play selected track
     Private Sub LoopMemListView_ItemActivate(sender As Object, e As EventArgs) _
      Handles loopMemListView.ItemActivate
         System.Diagnostics.Process.Start(fileNames(loopMemListView.SelectedItems(0).Index))
     End Sub
-    
-    
-        'delete single file from locMemListView
-    Private Sub LocMemListView_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles locMemListView.KeyUp
-        If e.KeyCode = Keys.Delete Then
-            If locMemListView.SelectedItems.Count > 0 Then
-                locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
-            End If
-        End If
-    End Sub
-    
-    
-    'delete multiple files from loopMemListView
-    Private Sub LoopMemListView_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles loopMemListView.KeyUp
-        If e.KeyCode = Keys.Delete Then
-            If loopMemListView.SelectedItems.Count > 0 Then
-                If loopMemListView.SelectedItems.Count < 2 Then
-                    loopMemListView.Items.RemoveAt(loopMemListView.SelectedIndices(0))
-                Else
-                    For i = loopMemListView.SelectedItems.Count - 1 To 0 Step -1
-                        loopMemListView.SelectedItems(i).Remove()
-                    Next
-                End If
-            End If
-        End If
-    End Sub
-    
-        'Drag and Drop from LocMem to LoopMem
-    Public lvi2 As ListViewItem
-    Private Sub LocMemListView_ItemDrag(ByVal sender As Object, ByVal e As _
-    System.Windows.Forms.ItemDragEventArgs) Handles locMemListView.ItemDrag
-        lvi2 = locMemListView.SelectedItems(0).Clone()
-        For i As Integer = 0 To locMemListView.SelectedIndices.Count - 1
-            locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
-        Next
-        ' Create a DataObject that holds the ListViewItem.
-        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi2), DragDropEffects.Copy)
-    End Sub
-
-    Private Sub LoopMemListView_DragEnter(ByVal sender As Object, ByVal e As _
-    System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragEnter
-        ' Check that a ListViewItem is being passed.
-        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
-            e.Effect = DragDropEffects.Copy
-        Else
-            e.Effect = DragDropEffects.None
-        End If
-    End Sub
 
 
 
-    Private Sub LoopMemListView_DragDrop(ByVal sender As Object, ByVal e As _
-    System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragDrop
-
-        loopMemListView.Items.Add(lvi2)
-    End Sub
-
-
-'Drag and Drop from LoopMem to LocMem
+    'Drag and Drop from LoopMem to LocMem
     Public lvi As ListViewItem
-    Public lvis() As ListViewItem
+    Public lvis(0) As ListViewItem
 
 
+
+    'copy and delete on drag and drop
     Private Sub LoopMemListView_ItemDrag(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.ItemDragEventArgs) Handles loopMemListView.ItemDrag
         lvi = loopMemListView.SelectedItems(0).Clone()
         For i As Integer = 0 To loopMemListView.SelectedIndices.Count - 1
+            ReDim Preserve lvis(i)
+            lvis(i) = loopMemListView.Items(loopMemListView.SelectedIndices(0))
             loopMemListView.Items.RemoveAt(loopMemListView.SelectedIndices(0))
         Next
+
         ' Create a DataObject that holds the ListViewItem.
-        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi), DragDropEffects.Copy)
+        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem()", lvis), DragDropEffects.Copy)
     End Sub
 
 
 
+    ' Check that a ListViewItem is being passed
     Private Sub LocMemListView_DragEnter(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.DragEventArgs) Handles locMemListView.DragEnter
-        ' Check that a ListViewItem is being passed.
-        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
+        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem()") Then
             e.Effect = DragDropEffects.Copy
         Else
             e.Effect = DragDropEffects.None
@@ -150,35 +94,47 @@ Public Class Form1
 
 
 
+    'drop single or multiple items
     Private Sub LocMemListView_DragDrop(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.DragEventArgs) Handles locMemListView.DragDrop
-        locMemListView.Items.Add(lvi)
+        Dim i As Integer = 0
+        If lvis.Count > 1 Then
+            For Each item As ListViewItem In lvis
+                locMemListView.Items.Add(item)
+            Next
+        Else
+            locMemListView.Items.Add(lvi)
+        End If
     End Sub
-
 
 
 
     'Drag and Drop from LocMem to LoopMem
     Public lvi2 As ListViewItem
+    Public lvis2(0) As ListViewItem
 
 
 
+    'copy and delete on drag and drop
     Private Sub LocMemListView_ItemDrag(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.ItemDragEventArgs) Handles locMemListView.ItemDrag
         lvi2 = locMemListView.SelectedItems(0).Clone()
         For i As Integer = 0 To locMemListView.SelectedIndices.Count - 1
+            ReDim Preserve lvis2(i)
+            lvis2(i) = locMemListView.Items(locMemListView.SelectedIndices(0))
             locMemListView.Items.RemoveAt(locMemListView.SelectedIndices(0))
         Next
+
         ' Create a DataObject that holds the ListViewItem.
-        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi2), DragDropEffects.Copy)
+        sender.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem()", lvis), DragDropEffects.Copy)
     End Sub
 
 
 
+    ' Check that a ListViewItem is being passed
     Private Sub LoopMemListView_DragEnter(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragEnter
-        ' Check that a ListViewItem is being passed.
-        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
+        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem()") Then
             e.Effect = DragDropEffects.Copy
         Else
             e.Effect = DragDropEffects.None
@@ -187,9 +143,17 @@ Public Class Form1
 
 
 
+    'drop single or multiple items
     Private Sub LoopMemListView_DragDrop(ByVal sender As Object, ByVal e As _
     System.Windows.Forms.DragEventArgs) Handles loopMemListView.DragDrop
-        loopMemListView.Items.Add(lvi2)
+        Dim i As Integer = 0
+        If lvis2.Count > 1 Then
+            For Each item As ListViewItem In lvis2
+                loopMemListView.Items.Add(item)
+            Next
+        Else
+            loopMemListView.Items.Add(lvi2)
+        End If
     End Sub
 
 
@@ -225,4 +189,19 @@ Public Class Form1
             End If
         End If
     End Sub
+
+
 End Class
+
+
+
+
+
+
+
+
+
+'bugs
+'drag and drop
+'   drag without dropping to the other side on memory tab causes an error
+'   cannot drag multiple items - deletes both and only copies the first
