@@ -221,6 +221,5 @@ End Class
 'bugs
 'drag and drop
 '   drag without dropping to the other side on memory tab causes an error
-'   cannot drag multiple items - deletes both and only copies the first
 'play selected track
 '   if the window is xed out too quickly, an error comes up
